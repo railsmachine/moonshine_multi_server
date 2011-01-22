@@ -2,7 +2,12 @@ module Moonshine
   module MultiServer
     def default_web_stack
       recipe :apache_server
-      recipe :default_system_config
+    end
+
+    def standalone_web_stack
+      # TODO: add non_rails_rack_environment
+      recipe :default_web_stack
+      recipe :default_system_config      
     end
     
     def default_db_stack
@@ -14,6 +19,13 @@ module Moonshine
       when 'sqlite', 'sqlite3'
         recipe :sqlite3
       end
+    end
+    
+    def standalone_db_stack
+      # TODO: add modified mysql_database
+      # TODO: add modified mysql_user
+      # TODO: add non_rails_rack_environment
+      recipe :default_db_stack
       recipe :default_system_config
     end
 
@@ -21,7 +33,13 @@ module Moonshine
       recipe :default_web_stack
       recipe :passenger_gem, :passenger_configure_gem_path, :passenger_apache_module, :passenger_site
       recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_bootstrap, :rails_migrations, :rails_logrotate  
-      recipe :default_system_config
+    end
+
+    def standalone_app_stack
+      # TODO add modified rails_migrations
+      # TODO add modified rails_bootstrap
+      recipe :default_app_stack
+      recipe :default_system_config      
     end
 
     def default_system_config
