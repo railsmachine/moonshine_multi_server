@@ -1,13 +1,11 @@
 module Moonshine
   module MultiServer
-
     def default_web_stack
       recipe :apache_server
-      recipe :passenger_gem, :passenger_configure_gem_path, :passenger_apache_module, :passenger_site
       recipe :default_system_config
     end
     
-    def default_database_stack
+    def default_db_stack
       case database_environment[:adapter]
       when 'mysql', 'mysql2'
         recipe :mysql_server, :mysql_gem, :mysql_database, :mysql_user, :mysql_fixup_debian_start
@@ -19,7 +17,9 @@ module Moonshine
       recipe :default_system_config
     end
 
-    def default_rails_stack
+    def default_app_stack
+      recipe :default_web_stack
+      recipe :passenger_gem, :passenger_configure_gem_path, :passenger_apache_module, :passenger_site
       recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_bootstrap, :rails_migrations, :rails_logrotate  
       recipe :default_system_config
     end
@@ -31,7 +31,7 @@ module Moonshine
     def default_stack
       recipe :default_web_stack
       recipe :default_database_stack
-      recipe :default_rails_stack
+      recipe :default_app_stack
       recipe :default_system_config
     end
   end
