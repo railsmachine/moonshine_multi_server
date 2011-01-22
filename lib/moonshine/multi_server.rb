@@ -5,9 +5,9 @@ module Moonshine
     end
 
     def standalone_web_stack
-      # TODO: add non_rails_rack_environment
       recipe :default_web_stack
-      recipe :default_system_config      
+      recipe :default_system_config
+      recipe :non_app_recipes
     end
     
     def default_db_stack
@@ -24,9 +24,9 @@ module Moonshine
     def standalone_db_stack
       # TODO: add modified mysql_database
       # TODO: add modified mysql_user
-      # TODO: add non_rails_rack_environment
       recipe :default_db_stack
       recipe :default_system_config
+      recipe :non_app_recipes
     end
 
     def default_app_stack
@@ -51,6 +51,33 @@ module Moonshine
       recipe :default_database_stack
       recipe :default_app_stack
       recipe :default_system_config
+    end
+
+    def non_rails_recipes
+      # Set up gemrc and the 'gem' package helper, but not Rails app gems.
+      def gemrc
+        exec 'rails_gems', :command => 'true'
+        gemrc = {
+          :verbose => true,
+          :gem => "--no-ri --no-rdoc",
+          :update_sources => true,
+          :sources => [ 'http://rubygems.org' ]
+        }
+        gemrc.merge!(configuration[:rubygems]) if configuration[:rubygems]
+        file '/etc/gemrc',
+          :ensure   => :present,
+          :mode     => '744',
+          :owner    => 'root',
+          :group    => 'root',
+          :content  => gemrc.to_yaml
+      end
+
+      def non_rails_rake_environment
+        package 'rake', :provider => :gem, :ensure => :installed
+        exec 'rake tasks', :command => 'true'
+      end
+      recipe :non_rails_rake_environment, :gemrc
+      recipe :rails_directories, :rails_logrotate
     end
   end
 end
