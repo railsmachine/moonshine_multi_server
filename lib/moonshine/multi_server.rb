@@ -22,7 +22,13 @@ module Moonshine
     end
     
     def standalone_db_stack
-      # TODO: add modified mysql_database
+      # Create the database from the current <tt>database_environment</tt>
+      def mysql_database
+        exec "mysql_database",
+          :command => mysql_query("create database #{database_environment[:database]};"),
+          :unless => mysql_query("show create database #{database_environment[:database]};"),
+          :require => service('mysql')
+      end
       # TODO: add modified mysql_user
       recipe :default_db_stack
       recipe :default_system_config
