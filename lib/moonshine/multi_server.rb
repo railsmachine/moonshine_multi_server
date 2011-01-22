@@ -29,7 +29,27 @@ module Moonshine
           :unless => mysql_query("show create database #{database_environment[:database]};"),
           :require => service('mysql')
       end
-      # TODO: add modified mysql_user
+      def mysql_user
+        database_adapter = database_environment[:adapter]
+        ips = configuration[database_adapter.to_sym][:allowed_hosts] if configuration[database_adapter.to_sym]
+        allowed_hosts = ips || []
+        allowed_hosts << 'localhost'
+        allowed_hosts.each do |host|
+          grant =<<EOF
+GRANT ALL PRIVILEGES
+ON #{database_environment[:database]}.*
+TO #{database_environment[:username]}@#{host}
+IDENTIFIED BY \\"#{database_environment[:password]}\\";
+FLUSH PRIVILEGES;
+EOF
+          exec "#{host}_mysql_user",
+            :command => mysql_query(grant),
+            :unless  => "mysql -u root -e ' select User from user where Host = \"#{host}\"' mysql | grep #{database_environment[:username]}",
+            :require => exec('mysql_database')
+        end
+      end
+    end
+
       recipe :default_db_stack
       recipe :default_system_config
       recipe :non_app_recipes
