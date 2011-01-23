@@ -1,3 +1,8 @@
+puts
+puts "==================================="
+puts "loading MoonshineMultiServer plugin"
+puts "==================================="
+puts
 namespace :moonshine do
   desc 'Apply the Moonshine manifest for this application'
   task :apply do
