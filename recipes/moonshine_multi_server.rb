@@ -1,11 +1,6 @@
-puts
-puts "==================================="
-puts "loading MoonshineMultiServer plugin"
-puts "==================================="
-puts
 namespace :moonshine do
   desc 'Apply the Moonshine manifest for this application'
-  task :apply do
+  task :multi_server_apply do
     apply_db_manifest
     apply_app_manifest
     apply_web_manifest

@@ -7,7 +7,7 @@ module Moonshine
     def standalone_web_stack
       recipe :default_web_stack
       recipe :default_system_config
-      recipe :non_app_recipes
+      recipe :non_rails_recipes
     end
     
     def default_db_stack
@@ -51,7 +51,7 @@ EOF
 
       recipe :default_db_stack
       recipe :default_system_config
-      recipe :non_app_recipes
+      recipe :non_rails_recipes
     end
 
     def default_app_stack
@@ -61,8 +61,6 @@ EOF
     end
 
     def standalone_app_stack
-      # TODO add modified rails_migrations
-      # TODO add modified rails_bootstrap
       recipe :default_app_stack
       recipe :default_system_config      
     end
