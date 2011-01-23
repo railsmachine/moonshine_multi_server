@@ -48,7 +48,6 @@ EOF
             :require => exec('mysql_database')
         end
       end
-    end
 
       recipe :default_db_stack
       recipe :default_system_config
