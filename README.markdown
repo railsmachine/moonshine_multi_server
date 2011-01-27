@@ -27,13 +27,13 @@ script/plugin install git://github.com/railsmachine/moonshine_multi_server.git
   * `app/manifests/web_manifest_.rb`
 * Add the stacks you need to each manifest.  Here is an example `app/manifests/application_manifest.rb`:
     
-<pre>
+<code><pre>
 require "#{File.dirname(__FILE__)}/../../vendor/plugins/moonshine/lib/moonshine.rb"
 class ApplicationManifest < Moonshine::Manifest::Rails
   include Moonshine::MultiServer
   recipe :standalone_app_stack
 end
-</pre>
+</pre></code>
 
 * Add one bit to your capistrano `config/deploy.rb`
 
