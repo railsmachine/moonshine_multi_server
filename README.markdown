@@ -44,3 +44,5 @@ namespace :moonshine do
   end  
 end
 </pre>
+
+TODO: Document MySQL allowed hosts
