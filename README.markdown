@@ -1,6 +1,6 @@
 # Moonshine Multi Server
 
-## A plugin for Moonshine[http://github.com/railsmachine/moonshine]
+## A plugin for [Moonshine](http://github.com/railsmachine/moonshine)
 
 A plugin for deploying one app to multiple servers
 
