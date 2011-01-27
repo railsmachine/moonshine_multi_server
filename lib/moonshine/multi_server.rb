@@ -10,7 +10,7 @@ module Moonshine
       recipe :non_rails_recipes
     end
     
-    def default_db_stack
+    def default_database_stack
       case database_environment[:adapter]
       when 'mysql', 'mysql2'
         recipe :mysql_server, :mysql_database, :mysql_user, :mysql_fixup_debian_start
@@ -21,7 +21,7 @@ module Moonshine
       end
     end
     
-    def standalone_db_stack
+    def standalone_database_stack
       # Create the database from the current <tt>database_environment</tt>
       def mysql_database
         exec "mysql_database",
@@ -49,12 +49,12 @@ EOF
         end
       end
 
-      recipe :default_db_stack
+      recipe :default_database_stack
       recipe :default_system_config
       recipe :non_rails_recipes
     end
 
-    def default_app_stack
+    def default_application_stack
       recipe :default_web_stack
       case database_environment[:adapter]
       when 'mysql', 'mysql2'
@@ -66,8 +66,8 @@ EOF
       recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_bootstrap, :rails_migrations, :rails_logrotate  
     end
 
-    def standalone_app_stack
-      recipe :default_app_stack
+    def standalone_application_stack
+      recipe :default_application_stack
       recipe :default_system_config      
     end
 
@@ -78,12 +78,12 @@ EOF
     def default_stack
       recipe :default_web_stack
       recipe :default_database_stack
-      recipe :default_app_stack
+      recipe :default_application_stack
       recipe :default_system_config
     end
 
     def non_rails_recipes
-      # Set up gemrc and the 'gem' package helper, but not Rails app gems.
+      # Set up gemrc and the 'gem' package helper, but not Rails application gems.
       def gemrc
         exec 'rails_gems', :command => 'true'
         gemrc = {

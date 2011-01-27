@@ -2,7 +2,7 @@
 
 ## A plugin for [Moonshine](http://github.com/railsmachine/moonshine)
 
-A plugin for deploying one app to multiple servers
+A plugin for deploying one application to multiple servers
 
 ## Instructions
 
@@ -31,7 +31,7 @@ script/plugin install git://github.com/railsmachine/moonshine_multi_server.git
 require "#{File.dirname(__FILE__)}/../../vendor/plugins/moonshine/lib/moonshine.rb"
 class ApplicationManifest < Moonshine::Manifest::Rails
   include Moonshine::MultiServer
-  recipe :standalone_app_stack
+  recipe :standalone_application_stack
 end
 </pre></code>
 
