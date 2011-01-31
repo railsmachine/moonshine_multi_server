@@ -56,14 +56,8 @@ EOF
 
     def default_application_stack
       recipe :default_web_stack
-      case database_environment[:adapter]
-      when 'mysql', 'mysql2'
-        recipe :mysql_gem
-      when 'postgresql'
-        recipe :postgresql_gem
-      end
       recipe :passenger_gem, :passenger_configure_gem_path, :passenger_apache_module, :passenger_site
-      recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_bootstrap, :rails_migrations, :rails_logrotate  
+      recipe :rails_recipes, :rails_database_recipes
     end
 
     def standalone_application_stack
@@ -80,6 +74,20 @@ EOF
       recipe :default_database_stack
       recipe :default_application_stack
       recipe :default_system_config
+    end
+
+    def rails_recipes
+      case database_environment[:adapter]
+      when 'mysql', 'mysql2'
+        recipe :mysql_gem
+      when 'postgresql'
+        recipe :postgresql_gem
+      end
+      recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_logrotate
+    end
+
+    def rails_database_recipes
+      recipe :rails_bootstrap, :rails_migrations
     end
 
     def non_rails_recipes
