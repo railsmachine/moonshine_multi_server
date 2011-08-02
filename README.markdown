@@ -1,10 +1,13 @@
-# Moonshine Multi Server
+Moonshine Multi Server
+-----------------------
 
-## A plugin for [Moonshine](http://github.com/railsmachine/moonshine)
+A plugin for [Moonshine](http://github.com/railsmachine/moonshine)
+===================================================================
 
 A plugin for deploying one application to multiple servers
 
-## Instructions
+Instructions
+=============
 
 * Install the [Moonshine](http://github.com/railsmachine/moonshine)
 * Configure servers for capistrano setting the appropriate role(s).  Here is an example `config/deploy.rb`:
@@ -45,4 +48,13 @@ namespace :moonshine do
 end
 </pre>
 
-TODO: Document MySQL allowed hosts
+TODO
+====
+
+* Document MySQL allowed hosts
+* Document `*_servers` helpers
+* More thorough examples
+* Examples with having more than app,web,db roles
+* Generator?!
+ * script/generate moonshine_multi_server app web db util
+* build capistrano servers from `*_servers` datas
