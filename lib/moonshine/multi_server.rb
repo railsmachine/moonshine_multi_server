@@ -30,8 +30,7 @@ module Moonshine
           :require => service('mysql')
       end
       def mysql_user
-        database_adapter = database_environment[:adapter]
-        ips = configuration[database_adapter.to_sym][:allowed_hosts] if configuration[database_adapter.to_sym]
+        ips = configuration[:mysql][:allowed_hosts] || []
         allowed_hosts = ips || []
         allowed_hosts << 'localhost'
         allowed_hosts.each do |host|
