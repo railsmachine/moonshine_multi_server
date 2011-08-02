@@ -1,5 +1,26 @@
+require 'resolv'
 module Moonshine
   module MultiServer
+
+    def self.included(manifest)
+      manifest.class_eval do
+        extend ClassMethods
+        servers_helpers = configuration.keys.select do |key|
+          key.to_s =~ /_servers$/
+        end
+
+        servers_helpers.each do |helper|
+          eval %Q{
+            def self.#{helper}
+              @#{helper} ||= servers_array_to_servers_hash_with_info(configuration[:#{helper}] || [])
+            end
+          }
+        end
+      end
+    end
+
+
+
     def default_web_stack
       recipe :apache_server
     end
@@ -116,4 +137,24 @@ EOF
       recipe :rails_directories, :rails_logrotate
     end
   end
+
+
+  module ClassMethods
+    def servers_array_to_servers_hash_with_info(servers)
+      servers.map do |hostname|
+        ip = Resolv.getaddress hostname
+        {    
+          :hostname => hostname,
+          :ip => ip,
+          :internal_ip => convert_public_ip_to_private_ip(ip)
+        }
+      end
+    end
+
+    def convert_public_ip_to_private_ip(ip)
+      ip
+    end
+  end
+
+
 end
