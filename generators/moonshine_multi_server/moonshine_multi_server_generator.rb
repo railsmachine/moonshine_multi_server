@@ -1,8 +1,6 @@
 class MoonshineMultiServerGenerator < Rails::Generator::Base
 
-  attr_reader :current_role
-
-  KNOWN_ROLES = %w(app web database redis memcached dj sphinx)
+  KNOWN_ROLES = %w(app web database redis memcached mongodb dj sphinx)
 
   def initialize(runtime_args, runtime_options = {})
     super
@@ -33,6 +31,10 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
     end
   end
 
+  protected
+
+  # FIXME metaprogram using KNOWN_ROLES?
+
   def app?
     @roles.include?('app')
   end
@@ -54,7 +56,11 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
   end
 
   def sphinx?
-    @roles.include?('memcached')
+    @roles.include?('sphinx')
+  end
+
+  def mongodb?
+    @roles.include?('mongodb')
   end
 
 end
