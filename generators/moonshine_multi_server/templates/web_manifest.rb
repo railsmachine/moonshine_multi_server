@@ -1,6 +1,8 @@
 require "#{File.dirname(__FILE__)}/base_manifest.rb"
+
 class WebManifest < BaseManifest
 
+  recipe :default_system_config
   recipe :non_rails_recipes
   
   configure :ssl => build_ssl_configuration
