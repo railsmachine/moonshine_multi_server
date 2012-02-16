@@ -9,7 +9,6 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
 
   def manifest
     recorded_session = record do |m|
-
       m.directory 'app/manifests'
 
       m.template 'base_manifest.rb', 'app/manifests/base_manifest.rb'

@@ -5,7 +5,7 @@ class RedisManifest < BaseManifest
   configure :iptables => build_redis_iptables_configuration
   recipe :iptables
 
-  configure(:sysctl => {:'vm.overcommit_memory' => 1})
+  configure :sysctl => {'vm.overcommit_memory' => 1}
   recipe :sysctl
 
   configure :redis => build_redis_configuration
