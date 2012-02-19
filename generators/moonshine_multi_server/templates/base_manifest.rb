@@ -6,7 +6,14 @@ class BaseManifest < Moonshine::Manifest::Rails
   include Moonshine::MultiServer
   include ConfigurationBuilders
 
+  on_stage :production do
+    recipe :scout
+    recipe :scout_dependencies
+  end
 
   def application_packages
+  end
+
+  def scout_dependencies
   end
 end
