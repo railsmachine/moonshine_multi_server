@@ -5,18 +5,89 @@ module ConfigurationBuilders
   end 
 
   module ClassMethods
+    def build_base_iptables_rules
+      [
+        '-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT',
+        '-A INPUT -p icmp -j ACCEPT',
+        '-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT',
+        '-A INPUT -s 127.0.0.1 -j ACCEPT'
+      ]
+    end
 <% if web? %>
     def build_haproxy_configuration
-      raise 'FIXME needs implementation'
+      default_backend = "#{configuration[:application]}_backend"
+
+      apps_backend = {
+        :name => default_backend,
+        :balance => 'roundrobin',
+        :servers => [],
+        :options => [
+        ]
+      }
+
+      apps_backend[:servers] = app_servers.map do |host|
+        url = "#{host[:internal_ip]}:#{configuration[:apache][:port] || 80}",
+        name = host[:hostname].split('.').first
+        {
+          :url => url,
+          :name => name,
+          :maxconn => 1000,
+          :weight => 28,
+          :options => [
+            'check',
+            'inter 20000',
+            'fastinter 500',
+            'downinter 500',
+            'fall 1'
+          ]
+        }
+      end
+
+      {
+        :default_backend => default_backend,
+        :backends => [apps_backend]
+      }
     end
 
     def build_heartbeat_configuration
-      raise 'FIXME needs implementation'
+      nodes = web_servers.map do |host|
+        [host[:hostname], host[:internal_ip]]
+      end
+
+      primary_node = nodes.first
+      primary_node_hostname = primary_node.first
+
+      primary_nodes_resources = configuration[:web_ha_ips] || []
+
+      {
+        :interface => 'eth1',
+        :nodes => nodes,
+        :resources => {
+          primary_node_hostname => primary_nodes_resources
+        }
+      }
     end
 
-    def build_iptables_configuration
-      raise 'FIXME needs implementation'
+    def build_ssl_configuration
+      {}
     end
+
+    def build_web_iptables_configuration
+      rules = build_base_iptables_rules
+
+      # full access between web servers
+      web_servers.each do |host|
+        rules << "-A INPUT -s #{host[:internal_ip]} -j ACCEPT"
+      end
+
+      # open access to http and https
+      [80, 443].each do |port|
+        rules << "-A INPUT -p tcp -m tcp --dport #{port} -j ACCEPT"
+      end
+
+      {:rules => rules}
+    end 
+
 <% end %>
 <% if database? %>
     def build_database_iptables_rules
@@ -48,7 +119,13 @@ module ConfigurationBuilders
 <% end %>
 <% if mongodb? %>
     def build_mongodb_iptables_configuration
-      raise 'FIXME needs implementation'
+      rules = build_base_iptables_rules
+
+      (app_servers + mongodb_servers).each do |host|
+        rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 27017 -j ACCEPT"
+      end
+
+      {:rules => rules}
     end
 
     def mongodb_replset
