@@ -1,3 +1,5 @@
+require "#{File.dirname(__FILE__)}/base_manifest.rb"
+
 class DatabaseManifest < BaseManifest
   recipe :standalone_database_stack
 
