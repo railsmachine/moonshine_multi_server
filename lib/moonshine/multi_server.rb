@@ -71,7 +71,7 @@ EOF
 
       recipe :default_database_stack
       recipe :default_system_config
-      recipe :non_rails_recipes
+      recipe :rails_recipes
     end
 
     def default_application_stack
