@@ -26,7 +26,7 @@ module ConfigurationBuilders
       }
 
       apps_backend[:servers] = app_servers.map do |host|
-        url = "#{host[:internal_ip]}:#{configuration[:apache][:port] || 80}",
+        url = "#{host[:internal_ip]}:#{configuration[:apache][:port] || 80}"
         name = host[:hostname].split('.').first
         {
           :url => url,
