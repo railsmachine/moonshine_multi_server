@@ -54,17 +54,36 @@ module ConfigurationBuilders
         [host[:hostname], host[:internal_ip]]
       end
 
-      primary_node = nodes.first
-      primary_node_hostname = primary_node.first
+      primary_node = nodes.first.first
 
-      primary_nodes_resources = configuration[:web_ha_ips] || []
+      public_resources = (configuration[:web_ha_ips] || []).map do |ip|
+        "IPaddr::#{ip}/24/eth0"
+      end
+
+      private_resources = (configuration[:web_private_ha_ips] || []).map do |ip|
+        "IPaddr::#{ip}/24/eth1"
+      end
+
+      # FIXME private resources can cause heartbeat problems.
+      # in particular, if the web server's IP is in the same subnet as the
+      # private resource, bringing up the private resource adds routing which
+      # messes with heartbeat's ability to detect the other nodes upedness,
+      # leading to split brain
+      resources = public_resources + private_resources
+
+      # following recommendations at http://linux-ha.org/wiki/FAQ#Heavy_Load
+      deadtime = 60
+      warntime = deadtime / 2
+      initdead = deadtime * 2
 
       {
-        :interface => 'eth1',
         :nodes => nodes,
         :resources => {
-          primary_node_hostname => primary_nodes_resources
-        }
+          primary_node => resources
+        },
+        :deadtime => deadtime,
+        :warntime => warntime,
+        :initdead => initdead
       }
     end
 
