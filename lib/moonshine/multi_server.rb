@@ -35,7 +35,7 @@ module Moonshine
       case database_environment[:adapter]
       when 'mysql', 'mysql2'
         recipe :mysql_server, :mysql_database, :mysql_user, :mysql_fixup_debian_start
-      when 'postgresql'
+      when 'postgresql', 'postgis'
         recipe :postgresql_server, :postgresql_user, :postgresql_database
       when 'sqlite', 'sqlite3'
         recipe :sqlite3

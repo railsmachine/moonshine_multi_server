@@ -122,7 +122,7 @@ module ConfigurationBuilders
       end
 
       {:rules => rules}
-    end
+    end  
 
     # TODO add additional configuration, like master/slave
     def build_redis_configuration
