@@ -115,11 +115,19 @@ module ConfigurationBuilders
 <% end %>
 <% if redis? %>
     def build_redis_iptables_configuration
-      raise 'FIXME needs implementation'
+      rules = build_base_iptables_rules
+
+      (app_servers + redis_servers).each do |host|
+          rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 6379 -j ACCEPT"
+      end
+
+      {:rules => rules}
     end
 
+    # TODO add additional configuration, like master/slave
     def build_redis_configuration
-      raise 'FIXME needs implementation'
+      {
+      }
     end
 <% end %>
 <% if memcached? %>
