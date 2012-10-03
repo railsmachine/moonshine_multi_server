@@ -9,4 +9,8 @@ class MemcachedManifest < BaseManifest
   configure :iptables => build_memcached_iptables_configuration
   recipe :iptables
 
+  def scout_dependencies
+    gem 'memcache-client'
+  end
+
 end

@@ -7,4 +7,8 @@ class DatabaseManifest < BaseManifest
   recipe    :iptables
 
   recipe :sysctl
+
+  def scout_dependencies
+    # TODO database specific scout dependencies
+  end
 end
