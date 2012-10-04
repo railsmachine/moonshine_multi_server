@@ -10,4 +10,8 @@ class RedisManifest < BaseManifest
 
   configure :redis => build_redis_configuration
   recipe :redis
+
+  def scout_dependencies
+    gem 'redis'
+  end
 end
