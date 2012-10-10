@@ -15,6 +15,7 @@ namespace :moonshine do
       sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{fetch(:stage, "production")} RAILS_ENV=#{fetch(:rails_env, "production")} shadow_puppet #{latest_release}/app/manifests/#{role}_manifest.rb"
     end
   end
+
   task :apply_db_manifest, :roles => [:db] do
     sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{fetch(:stage, "production")} RAILS_ENV=#{fetch(:rails_env, "production")} shadow_puppet #{latest_release}/app/manifests/database_manifest.rb"
   end

@@ -1,7 +1,7 @@
 module Moonshine
   module Generators
     class MultiServerGenerator < Rails::Generators::Base
-      KNOWN_ROLES = %w(app haproxy database redis memcached mongodb dj sphinx)
+      KNOWN_ROLES = %w(app haproxy database db redis memcached mongodb dj sphinx)
 
       desc Pathname.new(__FILE__).dirname.join('..', '..', '..', '..', 'generators', 'moonshine_multi_server', 'USAGE').read
 
@@ -20,12 +20,16 @@ module Moonshine
         template 'configuration_builders.rb', 'app/manifests/lib/configuration_builders.rb'
 
         @roles.each do |role|
-          self.role = role
+          self.role = role = if role == 'db'
+                              'database'
+                             else
+                               role
+                             end
 
           template_file = if KNOWN_ROLES.include?(role)
-                          "#{role}_manifest.rb"
+                            "#{role}_manifest.rb"
                           else
-                          'role_manifest.rb'
+                            'role_manifest.rb'
                           end
 
           template template_file, "app/manifests/#{role}_manifest.rb"
@@ -78,7 +82,7 @@ module Moonshine
       end
 
       def database?
-        @roles.include?('database')
+        @roles.include?('database') || @roles.include?('db')
       end
 
       def redis?
