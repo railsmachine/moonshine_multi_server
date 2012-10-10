@@ -11,6 +11,9 @@ class BaseManifest < Moonshine::Manifest::Rails
     recipe :scout_dependencies
   end
 
+  recipe :ssh
+  recipe :denyhosts
+
   def application_packages
   end
 

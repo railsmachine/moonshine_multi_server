@@ -31,6 +31,10 @@ module Moonshine
           template template_file, "app/manifests/#{role}_manifest.rb"
         end
 
+        plugin 'moonshine_scout', :git => 'git://github.com/railsmachine/moonshine_scout.git'
+        plugin 'moonshine_denyhosts', :git => 'git://github.com/railsmachine/moonshine_denyhosts.git'
+        plugin 'moonshine_ssh', :git => 'git://github.com/railsmachine/moonshine_ssh.git'
+
         if mongodb?
           plugin 'moonshine_mongodb', :git => 'git://github.com/railsmachine/moonshine_mongodb.git'
         end
