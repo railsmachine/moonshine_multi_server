@@ -132,11 +132,17 @@ module ConfigurationBuilders
 <% end %>
 <% if memcached? %>
     def build_memcached_configuration
-      raise 'FIXME needs implementation'
+      {:listen_address => Facter.ipaddress_eth1}
     end
 
     def build_memcached_iptables_configuration
-      raise 'FIXME needs implementation'
+      rules = build_base_iptables_rules
+
+      (app_servers).each do |host|
+        rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 11211 -j ACCEPT"
+      end
+
+      {:rules => rules}
     end
 <% end %>
 <% if sphinx? %>
