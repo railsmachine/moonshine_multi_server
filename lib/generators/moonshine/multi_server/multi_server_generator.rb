@@ -1,7 +1,7 @@
 module Moonshine
   module Generators
     class MultiServerGenerator < Rails::Generators::Base
-      KNOWN_ROLES = %w(app web database redis memcached mongodb dj sphinx)
+      KNOWN_ROLES = %w(app haproxy database redis memcached mongodb dj sphinx)
 
       desc Pathname.new(__FILE__).dirname.join('..', '..', '..', '..', 'generators', 'moonshine_multi_server', 'USAGE').read
 
@@ -10,7 +10,6 @@ module Moonshine
       def self.source_root
         @_moonshine_source_root ||= Pathname.new(__FILE__).dirname.join('..', '..', '..', '..', 'generators', 'moonshine_multi_server', 'templates')
       end
-
 
       def manifest
         plugin 'moonshine', :git => 'git://github.com/railsmachine/moonshine.git'
@@ -36,7 +35,7 @@ module Moonshine
           plugin 'moonshine_mongodb', :git => 'git://github.com/railsmachine/moonshine_mongodb.git'
         end
 
-        if web?
+        if haproxy?
           plugin 'moonshine_haproxy', :git => 'git://github.com/railsmachine/moonshine_haproxy.git'
           plugin 'moonshine_heartbeat', :git => 'git://github.com/railsmachine/moonshine_heartbeat.git'
         end
@@ -70,8 +69,8 @@ module Moonshine
         @roles.include?('app')
       end
 
-      def web?
-        @roles.include?('web')
+      def haproxy?
+        @roles.include?('haproxy')
       end
 
       def database?
@@ -95,7 +94,7 @@ module Moonshine
       end
 
       def iptables?
-        web? || mongodb? || sphinx? || redis? || memcached? || database?
+        haproxy? || mongodb? || sphinx? || redis? || memcached? || database?
       end
 
       def sysctl?

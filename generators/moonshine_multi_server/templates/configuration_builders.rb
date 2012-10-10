@@ -13,7 +13,7 @@ module ConfigurationBuilders
         '-A INPUT -s 127.0.0.1 -j ACCEPT'
       ]
     end
-<% if web? %>
+<% if haproxy? %>
     def build_haproxy_configuration
       default_backend = "#{configuration[:application]}_backend"
 

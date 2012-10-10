@@ -1,6 +1,6 @@
 class MoonshineMultiServerGenerator < Rails::Generator::Base
 
-  KNOWN_ROLES = %w(app web database redis memcached mongodb dj sphinx)
+  KNOWN_ROLES = %w(app haproxy database redis memcached mongodb dj sphinx)
 
   def initialize(runtime_args, runtime_options = {})
     super
@@ -38,8 +38,8 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
     @roles.include?('app')
   end
 
-  def web?
-    @roles.include?('web')
+  def haproxy?
+    @roles.include?('haproxy')
   end
 
   def database?
