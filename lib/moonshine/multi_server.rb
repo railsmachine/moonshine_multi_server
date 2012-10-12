@@ -30,6 +30,14 @@ module Moonshine
       recipe :default_system_config
       recipe :non_rails_recipes
     end
+
+    def standalone_memcached_stack
+      recipe :memcached
+      recipe :iptables
+
+      recipe :default_system_config
+      recipe :non_rails_recipes
+    end
     
     def default_database_stack
       case database_environment[:adapter]

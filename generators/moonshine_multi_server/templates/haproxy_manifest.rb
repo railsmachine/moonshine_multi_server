@@ -1,6 +1,6 @@
 require "#{File.dirname(__FILE__)}/base_manifest.rb"
 
-class WebManifest < BaseManifest
+class HaproxyManifest < BaseManifest
 
   recipe :default_system_config
   recipe :non_rails_recipes
