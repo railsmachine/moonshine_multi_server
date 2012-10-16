@@ -31,6 +31,14 @@ module Moonshine
       recipe :non_rails_recipes
     end
 
+    def standalone_haproxy_stack
+      recipe :standalone_web_stack
+
+      recipe :haproxy
+      recipe :heartbeat
+      recipe :iptables
+    end
+
     def standalone_memcached_stack
       recipe :memcached
       recipe :iptables
