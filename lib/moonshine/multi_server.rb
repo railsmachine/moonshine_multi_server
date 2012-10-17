@@ -32,7 +32,8 @@ module Moonshine
     end
 
     def standalone_haproxy_stack
-      recipe :standalone_web_stack
+      recipe :default_system_config
+      recipe :non_rails_recipes
 
       recipe :haproxy
       recipe :heartbeat
