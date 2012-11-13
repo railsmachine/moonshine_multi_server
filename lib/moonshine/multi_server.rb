@@ -134,7 +134,20 @@ EOF
     def non_rails_recipes
       # Set up gemrc and the 'gem' package helper, but not Rails application gems.
       def gemrc
-        exec 'rails_gems', :command => 'true'
+        exec 'rails_gems',
+          :command => 'true',
+          :onlyif => 'false',
+          :refreshonly => true
+
+        gemfile_path = rails_root.join('Gemfile')
+        if gemfile_path.exist?
+          exec 'bundle install',
+            :command => 'true',
+            :onlyif => 'false', 
+            :refreshonly => true,
+            :before => exec('rails_gems')
+        end
+
         gemrc = {
           :verbose => true,
           :gem => "--no-ri --no-rdoc",
@@ -152,7 +165,7 @@ EOF
 
       def non_rails_rake_environment
         package 'rake', :provider => :gem, :ensure => :installed
-        exec 'rake tasks', :command => 'true'
+        exec 'rake tasks', :command => 'true', :onlyif => 'false', :refreshonly => true
       end
       recipe :non_rails_rake_environment, :gemrc
       recipe :rails_directories, :rails_logrotate
