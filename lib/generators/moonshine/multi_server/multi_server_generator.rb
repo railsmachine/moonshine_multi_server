@@ -66,6 +66,10 @@ module Moonshine
           plugin 'moonshine_memcached', :git => 'git://github.com/railsmachine/moonshine_memcached.git'
         end
 
+        if asset_pipeline?
+          plugin 'moonshine_nodejs', :git => 'git://github.com/railsmachine/moonshine_nodejs.git'
+        end
+
       end
 
       protected
@@ -101,6 +105,10 @@ module Moonshine
 
       def mongodb?
         @roles.include?('mongodb')
+      end
+      
+      def asset_pipeline?
+        app? &&  Rails.version >= '3.1'
       end
 
       def iptables?
