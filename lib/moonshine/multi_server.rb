@@ -113,7 +113,7 @@ EOF
       recipe :passenger_gem, :passenger_configure_gem_path, :passenger_apache_module, :passenger_site
       recipe :rails_recipes, :rails_database_recipes
 
-      if configuration[:assets] && (configuration[:assets][:enabled] || configuration[:assets][:precompile])
+      if precompile_asset_pipeline?
         recipe :rails_asset_pipeline
       end
     end
