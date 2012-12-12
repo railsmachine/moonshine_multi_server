@@ -48,6 +48,15 @@ module Moonshine
       recipe :non_rails_recipes
     end
 
+    def standalone_redis_stack
+      recipe :non_rails_recipes
+      recipe :default_system_config
+
+      recipe :redis
+      recipe :iptables
+      recipe :sysctl
+    end
+
     def standalone_sphinx_stack
       recipe :sphinx
       recipe :iptables
