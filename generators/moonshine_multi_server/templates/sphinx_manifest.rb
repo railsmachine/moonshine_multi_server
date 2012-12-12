@@ -1,11 +1,9 @@
 require "#{File.dirname(__FILE__)}/base_manifest.rb"
 
 class SphinxManifest < BaseManifest
-  recipe :rails_recipes
-  recipe :sphinx
 
-  configure :iptables => { :rules => build_sphinx_iptables_rules }
-  recipe    :iptables
+  configure :sphinx => build_sphinx_server_configuration
+  configure :iptables => build_sphinx_iptables_configuration
+  recipe :standalone_sphinx_stack
 
-  recipe :sysctl
 end

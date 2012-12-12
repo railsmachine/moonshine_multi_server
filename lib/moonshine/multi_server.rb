@@ -47,6 +47,14 @@ module Moonshine
       recipe :default_system_config
       recipe :non_rails_recipes
     end
+
+    def standalone_sphinx_stack
+      recipe :sphinx
+      recipe :iptables
+      recipe :sysctl
+
+      recipe :rails_recipes
+    end
     
     def default_database_stack
       case database_environment[:adapter]

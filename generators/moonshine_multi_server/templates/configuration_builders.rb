@@ -117,7 +117,7 @@ module ConfigurationBuilders
     def build_redis_iptables_configuration
       rules = build_base_iptables_rules
 
-      (app_servers + redis_servers).each do |host|
+      (servers_with_rails_env + redis_servers).each do |host|
           rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 6379 -j ACCEPT"
       end
 
@@ -138,7 +138,7 @@ module ConfigurationBuilders
     def build_memcached_iptables_configuration
       rules = build_base_iptables_rules
 
-      (app_servers).each do |host|
+      servers_with_rails_env.each do |host|
         rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 11211 -j ACCEPT"
       end
 
@@ -146,15 +146,29 @@ module ConfigurationBuilders
     end
 <% end %>
 <% if sphinx? %>
-    def build_sphinx_iptables_rules
-      raise 'FIXME needs implementation'
+    def build_sphinx_iptables_configuration
+      rules = build_base_iptables_rules
+
+      servers_with_rails_env.each do |host|
+        rules << "-A INPUT -s #{host[:internal_ip]}/32 -p tcp -m tcp --dport 9312 -j ACCEPT"
+      end
+
+      {:rules => rules}
+    end
+
+    def build_sphinx_server_configuration
+      {:extra => {:address => '0.0.0.0'}}
+    end
+
+    def build_sphinx_client_configuration
+      {:extra => {:address => sphinx_servers.first[:internal_ip]}}
     end
 <% end %>
 <% if mongodb? %>
     def build_mongodb_iptables_configuration
       rules = build_base_iptables_rules
 
-      (app_servers + mongodb_servers).each do |host|
+      (servers_with_rails_env + mongodb_servers).each do |host|
         rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 27017 -j ACCEPT"
       end
 
@@ -181,6 +195,11 @@ module ConfigurationBuilders
     "{_id: '#{mongodb_replset}', members: [#{members.join(', ')}]}"
     end
 <% end %>
+
+     def servers_with_rails_env
+       # TODO update with correct list of servers that will need rails environment
+       app_servers
+     end
  
   end
 end

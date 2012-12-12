@@ -78,7 +78,7 @@ module Moonshine
       end
 
       def haproxy?
-        @roles.include?('haproxy')
+        @roles.include?('haproxy') || @roles.include?('web')
       end
 
       def database?
