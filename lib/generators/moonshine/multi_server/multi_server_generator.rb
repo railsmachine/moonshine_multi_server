@@ -22,6 +22,8 @@ module Moonshine
         @roles.each do |role|
           self.role = role = if role == 'db'
                               'database'
+                             elsif role == 'app'
+                               'application'
                              else
                                role
                              end
@@ -74,7 +76,7 @@ module Moonshine
       # FIXME metaprogram using KNOWN_ROLES?
 
       def app?
-        @roles.include?('app')
+        @roles.include?('app') || @roles.include?('app')
       end
 
       def haproxy?

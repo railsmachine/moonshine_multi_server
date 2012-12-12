@@ -35,7 +35,7 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
   # FIXME metaprogram using KNOWN_ROLES?
 
   def app?
-    @roles.include?('app')
+    @roles.include?('app') || @roles.include?('application')
   end
 
   def haproxy?
