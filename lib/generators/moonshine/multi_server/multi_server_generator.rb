@@ -13,7 +13,7 @@ module Moonshine
 
       def manifest
         plugin 'moonshine', :git => 'git://github.com/railsmachine/moonshine.git'
-        generate 'moonshine', "--multistage"
+        generate 'moonshine', "--multistage", "--skip-manifest"
 
         template 'base_manifest.rb', 'app/manifests/base_manifest.rb'
 
