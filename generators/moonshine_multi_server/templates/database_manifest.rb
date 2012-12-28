@@ -9,6 +9,17 @@ class DatabaseManifest < BaseManifest
   recipe :sysctl
 
   def scout_dependencies
+<%- if mysql? -%>
+    gem 'mysql'
+<%- elsif postgresql? -%>
+    gem 'pg', :ensure => :latest, :before => package('libpq-dev')
+
+    psql "CREATE USER #{configuration[:scout][:postgresql][:user]} WITH PASSWORD '#{configuration[:scout][:postgresql][:password]}'",
+      :alias    => "scout_postgresql_user",
+      :unless   => psql_query('\\\\du') + "| grep #{configuration[:scout][:postgresql][:user]}",
+      :require  => service('postgresql')
+<%- else -%>
     # TODO database specific scout dependencies
+<%- end -%>
   end
 end
