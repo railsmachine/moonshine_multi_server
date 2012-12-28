@@ -8,6 +8,7 @@ class AppManifest < BaseManifest
 <%- if sphinx? -%>
   configure :sphinx => build_sphinx_client_configuration
   recipe :sphinx_config_only
+
 <%- end -%>
   def cronjobs
   end
