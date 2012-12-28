@@ -1,7 +1,7 @@
 module Moonshine
   module Generators
     class MultiServerGenerator < Rails::Generators::Base
-      KNOWN_ROLES = %w(app haproxy database db redis memcached mongodb dj sphinx)
+      KNOWN_ROLES = %w(app application haproxy database db redis memcached mongodb dj sphinx)
 
       desc Pathname.new(__FILE__).dirname.join('..', '..', '..', '..', 'generators', 'moonshine_multi_server', 'USAGE').read
 
