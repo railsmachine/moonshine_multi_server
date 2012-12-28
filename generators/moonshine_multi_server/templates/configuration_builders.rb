@@ -13,7 +13,8 @@ module ConfigurationBuilders
         '-A INPUT -s 127.0.0.1 -j ACCEPT'
       ]
     end
-<% if haproxy? %>
+<%- if haproxy? -%>
+
     def build_haproxy_configuration
       default_backend = "#{configuration[:application]}_backend"
 
@@ -25,9 +26,9 @@ module ConfigurationBuilders
         ]
       }
 
-      apps_backend[:servers] = app_servers.map do |host|
-        url = "#{host[:internal_ip]}:#{configuration[:apache][:port] || 80}"
-        name = host[:hostname].split('.').first
+      apps_backend[:servers] = app_servers.map do |server|
+        url = "#{server[:internal_ip]}:#{configuration[:apache][:port] || 80}"
+        name = server[:hostname].split('.').first
         {
           :url => url,
           :name => name,
@@ -50,8 +51,8 @@ module ConfigurationBuilders
     end
 
     def build_heartbeat_configuration
-      nodes = web_servers.map do |host|
-        [host[:hostname], host[:internal_ip]]
+      nodes = web_servers.map do |server|
+        [server[:hostname], server[:internal_ip]]
       end
 
       primary_node = nodes.first.first
@@ -95,8 +96,8 @@ module ConfigurationBuilders
       rules = build_base_iptables_rules
 
       # full access between web servers
-      web_servers.each do |host|
-        rules << "-A INPUT -s #{host[:internal_ip]} -j ACCEPT"
+      web_servers.each do |server|
+        rules << "-A INPUT -s #{server[:internal_ip]} -j ACCEPT"
       end
 
       # open access to http and https
@@ -106,19 +107,31 @@ module ConfigurationBuilders
 
       {:rules => rules}
     end 
+<%- end -%>
+<%- if database? -%>
 
-<% end %>
-<% if database? %>
     def build_database_iptables_rules
-      raise 'FIXME needs implementation'
+      rules = build_base_iptables_rules
+      servers_with_rails_env.each do |server|
+<%- if mysql? -%>
+        rules << "-A INPUT -s #{server[:internal_ip]} -p tcp -m tcp --dport 3306 -j ACCEPT"
+<%- elsif postgresql? -%>
+        rules << "-A INPUT -s #{server[:internal_ip]} -p tcp -m tcp --dport 5432 -j ACCEPT"
+<%- else -%>
+        raise 'FIXME needs implementation to open up database port'
+<%- end -%>
+      end
+
+      rules
     end
-<% end %>
-<% if redis? %>
+<%- end -%>
+<%- if redis? -%>
+
     def build_redis_iptables_configuration
       rules = build_base_iptables_rules
 
-      (servers_with_rails_env + redis_servers).each do |host|
-          rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 6379 -j ACCEPT"
+      (servers_with_rails_env + redis_servers).each do |server|
+          rules << "-A INPUT -s #{server[:internal_ip]} -p tcp -m tcp --dport 6379 -j ACCEPT"
       end
 
       {:rules => rules}
@@ -129,8 +142,9 @@ module ConfigurationBuilders
       {
       }
     end
-<% end %>
-<% if memcached? %>
+<%- end -%>
+<%- if memcached? -%>
+
     def build_memcached_configuration
       {:listen_address => Facter.ipaddress_eth1}
     end
@@ -138,19 +152,20 @@ module ConfigurationBuilders
     def build_memcached_iptables_configuration
       rules = build_base_iptables_rules
 
-      servers_with_rails_env.each do |host|
-        rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 11211 -j ACCEPT"
+      servers_with_rails_env.each do |server|
+        rules << "-A INPUT -s #{server[:internal_ip]} -p tcp -m tcp --dport 11211 -j ACCEPT"
       end
 
       {:rules => rules}
     end
-<% end %>
-<% if sphinx? %>
+<%- end -%>
+<%- if sphinx? -%>
+
     def build_sphinx_iptables_configuration
       rules = build_base_iptables_rules
 
-      servers_with_rails_env.each do |host|
-        rules << "-A INPUT -s #{host[:internal_ip]}/32 -p tcp -m tcp --dport 9312 -j ACCEPT"
+      servers_with_rails_env.each do |server|
+        rules << "-A INPUT -s #{server[:internal_ip]}/32 -p tcp -m tcp --dport 9312 -j ACCEPT"
       end
 
       {:rules => rules}
@@ -163,13 +178,14 @@ module ConfigurationBuilders
     def build_sphinx_client_configuration
       {:extra => {:address => sphinx_servers.first[:internal_ip]}}
     end
-<% end %>
-<% if mongodb? %>
+<%- end -%>
+<%- if mongodb? -%>
+
     def build_mongodb_iptables_configuration
       rules = build_base_iptables_rules
 
-      (servers_with_rails_env + mongodb_servers).each do |host|
-        rules << "-A INPUT -s #{host[:internal_ip]} -p tcp -m tcp --dport 27017 -j ACCEPT"
+      (servers_with_rails_env + mongodb_servers).each do |server|
+        rules << "-A INPUT -s #{server[:internal_ip]} -p tcp -m tcp --dport 27017 -j ACCEPT"
       end
 
       {:rules => rules}
@@ -187,14 +203,14 @@ module ConfigurationBuilders
     end
 
     def build_mongodb_replset_initiate_config_object
-      members = mongodb_servers.map do |host|
-        id = host[:hostname].match(/mongo(\d+)\./)[1]
-        "{_id: #{id}, host: '#{host[:internal_ip]}'}"
+      members = mongodb_servers.map do |server|
+        id = server[:hostname].match(/mongo(\d+)\./)[1]
+        "{_id: #{id}, host: '#{server[:internal_ip]}'}"
       end
 
     "{_id: '#{mongodb_replset}', members: [#{members.join(', ')}]}"
     end
-<% end %>
+<%- end -%>
 
      def servers_with_rails_env
        # TODO update with correct list of servers that will need rails environment
