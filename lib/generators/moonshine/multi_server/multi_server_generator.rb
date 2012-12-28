@@ -19,6 +19,17 @@ module Moonshine
         plugin 'moonshine', :git => 'git://github.com/railsmachine/moonshine.git'
         generate 'moonshine', "--multistage", "--skip-manifest"
 
+
+        servers_for_moonshine_yml = @roles.map do |role|
+"""
+
+:#{role}_servers:
+- FIXME with list of servers"""
+        end.join("")
+
+        inject_into_file 'config/moonshine/staging.yml', servers_for_moonshine_yml, :after => "#  - assets2.staging.yourapp.com"
+        inject_into_file 'config/moonshine/production.yml', servers_for_moonshine_yml, :after => "#  - assets2.yourapp.com"
+
         template 'base_manifest.rb', 'app/manifests/base_manifest.rb'
 
         template 'configuration_builders.rb', 'app/manifests/lib/configuration_builders.rb'
