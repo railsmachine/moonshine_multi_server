@@ -114,7 +114,7 @@ module Moonshine
       end
       
       def asset_pipeline?
-        app? &&  Rails.version >= '3.1'
+        Rails.version >= '3.1' && Rails.root.join('app/assets').directory?
       end
 
       def mysql?

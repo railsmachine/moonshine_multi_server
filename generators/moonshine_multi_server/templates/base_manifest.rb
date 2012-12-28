@@ -15,6 +15,12 @@ class BaseManifest < Moonshine::Manifest::Rails
   recipe :denyhosts
 
   def application_packages
+<%- if asset_pipeline? -%>
+    recipe :nodejs
+
+<%- end -%>
+    # TODO add any custom system packages here. For example:
+    # package 'blah', :ensure => :installed, :before => exec('bundle install')
   end
 
   def scout_dependencies
