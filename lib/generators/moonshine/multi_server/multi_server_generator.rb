@@ -2,9 +2,11 @@ module Moonshine
   module Generators
     class MultiServerGenerator < Rails::Generators::Base
       KNOWN_ROLES = %w(app application haproxy database db redis memcached mongodb dj sphinx)
+      KNOWN_DATABASES = %w(postgresql mysql)
 
       desc Pathname.new(__FILE__).dirname.join('..', '..', '..', '..', 'generators', 'moonshine_multi_server', 'USAGE').read
 
+      class_option :database, :default => 'mysql', :desc => '(sql) database to use for the application'
       argument :roles, :type => :array, :defaults => %w(app web database)
 
       def self.source_root
@@ -70,6 +72,10 @@ module Moonshine
           plugin 'moonshine_nodejs', :git => 'git://github.com/railsmachine/moonshine_nodejs.git'
         end
 
+        if postgresql?
+          plugin 'moonshine_postgres_9', :git => 'git@github.com:railsmachine/moonshine_postgres_9.git'
+        end
+
       end
 
       protected
@@ -109,6 +115,14 @@ module Moonshine
       
       def asset_pipeline?
         app? &&  Rails.version >= '3.1'
+      end
+
+      def mysql?
+        options[:database] == 'mysql'
+      end
+
+      def postgresql?
+        options[:database] == 'postgresql'
       end
 
       def iptables?
