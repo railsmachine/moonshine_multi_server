@@ -112,7 +112,11 @@ module Moonshine
       def mongodb?
         @roles.include?('mongodb')
       end
-      
+
+      def dj?
+        @roles.include?('dj')
+      end
+
       def asset_pipeline?
         Rails.version >= '3.1' && Rails.root.join('app/assets').directory?
       end
@@ -129,8 +133,22 @@ module Moonshine
         haproxy? || mongodb? || sphinx? || redis? || memcached? || database?
       end
 
+      def worker?
+        dj? || @roles.include?('worker')
+      end
+
       def sysctl?
         redis? || database? || sphinx?
+      end
+
+      def servers_with_rails_env
+        rails_roles = []
+        rails_roles << 'app' if app?
+        rails_roles << 'database' if database?
+        rails_roles << 'sphinx' if sphinx?
+        rails_roles << 'worker' if worker?
+
+        rails_roles.map {|role| "#{role}_servers" }
       end
 
     end

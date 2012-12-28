@@ -213,8 +213,7 @@ module ConfigurationBuilders
 <%- end -%>
 
      def servers_with_rails_env
-       # TODO update with correct list of servers that will need rails environment
-       app_servers
+       (<%= servers_with_rails_env.join(' + ') %>)
      end
  
   end
