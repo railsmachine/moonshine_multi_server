@@ -1,4 +1,5 @@
 require "#{File.dirname(__FILE__)}/base_manifest.rb"
+
 class MemcachedManifest < BaseManifest
 
   configure :memcached => build_memcached_configuration

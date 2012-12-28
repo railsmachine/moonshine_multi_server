@@ -1,5 +1,6 @@
 require "#{File.dirname(__FILE__)}/base_manifest.rb"
-class AppManifest < BaseManifest
+
+class ApplicationManifest < BaseManifest
   recipe :standalone_application_stack
 
   recipe :application_packages

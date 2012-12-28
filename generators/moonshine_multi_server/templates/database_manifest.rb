@@ -1,6 +1,7 @@
 require "#{File.dirname(__FILE__)}/base_manifest.rb"
 
 class DatabaseManifest < BaseManifest
+
   recipe :standalone_database_stack
 
   configure :iptables => { :rules => build_database_iptables_rules }
