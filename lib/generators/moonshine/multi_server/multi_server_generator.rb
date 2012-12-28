@@ -1,19 +1,21 @@
 module Moonshine
   module Generators
     class MultiServerGenerator < Rails::Generators::Base
-      KNOWN_ROLES = %w(app application haproxy database db redis memcached mongodb dj sphinx)
+      KNOWN_ROLES = %w(application haproxy database redis memcached mongodb dj sphinx)
       KNOWN_DATABASES = %w(postgresql mysql)
 
       desc Pathname.new(__FILE__).dirname.join('..', '..', '..', '..', 'generators', 'moonshine_multi_server', 'USAGE').read
 
       class_option :database, :default => 'mysql', :desc => '(sql) database to use for the application'
-      argument :roles, :type => :array, :defaults => %w(app web database)
+      argument :roles, :type => :array, :defaults => %w(application haproxy database)
 
       def self.source_root
         @_moonshine_source_root ||= Pathname.new(__FILE__).dirname.join('..', '..', '..', '..', 'generators', 'moonshine_multi_server', 'templates')
       end
 
       def manifest
+        @roles = normalize_roles(@roles)
+
         plugin 'moonshine', :git => 'git://github.com/railsmachine/moonshine.git'
         generate 'moonshine', "--multistage", "--skip-manifest"
 
@@ -22,20 +24,14 @@ module Moonshine
         template 'configuration_builders.rb', 'app/manifests/lib/configuration_builders.rb'
 
         @roles.each do |role|
-          self.role = role = if role == 'db'
-                              'database'
-                             elsif role == 'app'
-                               'application'
-                             else
-                               role
-                             end
-
           template_file = if KNOWN_ROLES.include?(role)
                             "#{role}_manifest.rb"
-                          else
+                          elsif role
                             'role_manifest.rb'
+                          else
+                            raise "Nil role :("
                           end
-
+          self.role = role
           template template_file, "app/manifests/#{role}_manifest.rb"
         end
 
@@ -86,15 +82,15 @@ module Moonshine
       # FIXME metaprogram using KNOWN_ROLES?
 
       def app?
-        @roles.include?('app') || @roles.include?('app')
+        @roles.include?('application')
       end
 
       def haproxy?
-        @roles.include?('haproxy') || @roles.include?('web')
+        @roles.include?('haproxy')
       end
 
       def database?
-        @roles.include?('database') || @roles.include?('db')
+        @roles.include?('database')
       end
 
       def redis?
@@ -149,6 +145,29 @@ module Moonshine
         rails_roles << 'worker' if worker?
 
         rails_roles.map {|role| "#{role}_servers" }
+      end
+
+      def normalize_roles(roles)
+        roles.map do |role|
+          case role
+          when 'db'
+            'database'
+          when 'app' 
+            'application'
+          when 'web' 
+            'haproxy'
+          else
+            role
+          end
+        end.compact.sort
+      end
+
+      def role=(role)
+        @role = role
+      end
+
+      def role
+        @role
       end
 
     end
