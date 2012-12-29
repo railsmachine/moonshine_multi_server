@@ -62,6 +62,18 @@ module Moonshine
 
       recipe :rails_recipes
     end
+
+    def standalone_sunspot_stack
+      recipe :java
+      recipe :iptables
+      recipe :default_system_config
+      recipe :rails_recipes
+    end
+
+    def standalone_worker_stack
+      recipe :rails_recipes
+      recipe :default_system_config
+    end
     
     def default_database_stack
       case database_environment[:adapter]
@@ -82,6 +94,7 @@ module Moonshine
           :unless => mysql_query("show create database #{database_environment[:database]};"),
           :require => service('mysql')
       end
+
       def mysql_user
         ips = configuration[:mysql][:allowed_hosts] || []
         allowed_hosts = ips || []
