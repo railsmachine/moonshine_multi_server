@@ -19,8 +19,6 @@ module Moonshine
       end
     end
 
-
-
     def default_web_stack
       recipe :apache_server
     end
