@@ -114,9 +114,15 @@ EOF
         end
       end
 
+      # placeholder, this will happen on the app server
+      def rails_bootstrap
+        exec 'rails_bootstrap', :command => 'true', :refreshonly => true, :unless => 'false'
+      end
+
       recipe :default_database_stack
       recipe :default_system_config
       recipe :rails_recipes
+      recipe :rails_bootstrap
     end
 
     def default_application_stack
