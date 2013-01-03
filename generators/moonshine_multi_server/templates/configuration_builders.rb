@@ -51,7 +51,7 @@ module ConfigurationBuilders
     end
 
     def build_heartbeat_configuration
-      nodes = web_servers.map do |server|
+      nodes = haproxy_servers.map do |server|
         [server[:hostname], server[:internal_ip]]
       end
 
@@ -96,7 +96,7 @@ module ConfigurationBuilders
       rules = build_base_iptables_rules
 
       # full access between web servers
-      web_servers.each do |server|
+      haproxy_servers.each do |server|
         rules << "-A INPUT -s #{server[:internal_ip]} -j ACCEPT"
       end
 
