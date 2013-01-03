@@ -150,7 +150,7 @@ module Moonshine
 
       def servers_with_rails_env
         rails_roles = []
-        rails_roles << 'app' if app?
+        rails_roles << 'application' if app?
         rails_roles << 'database' if database?
         rails_roles << 'sphinx' if sphinx?
         rails_roles << 'worker' if worker?
