@@ -124,6 +124,14 @@ module ConfigurationBuilders
 
       rules
     end
+<%- if postgresql? -%>
+    def build_postgresql_configuration
+      {
+        :listen_addresses => ['127.0.0.1', Facter.ipaddress_eth1],
+        :version => "9.2"
+      }
+    end
+<%- end -%>
 <%- end -%>
 <%- if redis? -%>
 
