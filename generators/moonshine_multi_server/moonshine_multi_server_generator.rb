@@ -2,6 +2,8 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
 
   KNOWN_ROLES = %w(app haproxy database redis memcached mongodb dj sphinx)
 
+  default_options :database => 'mysql'
+
   def initialize(runtime_args, runtime_options = {})
     super
     @roles = runtime_args.dup
@@ -34,32 +36,94 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
 
   # FIXME metaprogram using KNOWN_ROLES?
 
-  def app?
-    @roles.include?('app') || @roles.include?('application')
-  end
+      def app?
+        @roles.include?('application')
+      end
 
-  def haproxy?
-    @roles.include?('haproxy')
-  end
+      def haproxy?
+        @roles.include?('haproxy')
+      end
 
-  def database?
-    @roles.include?('database')
-  end
+      def database?
+        @roles.include?('database')
+      end
 
-  def redis?
-    @roles.include?('redis')
-  end
+      def redis?
+        @roles.include?('redis')
+      end
 
-  def memcached?
-    @roles.include?('memcached')
-  end
+      def memcached?
+        @roles.include?('memcached')
+      end
 
-  def sphinx?
-    @roles.include?('sphinx')
-  end
+      def sphinx?
+        @roles.include?('sphinx')
+      end
 
-  def mongodb?
-    @roles.include?('mongodb')
-  end
+      def mongodb?
+        @roles.include?('mongodb')
+      end
 
+      def dj?
+        @roles.include?('dj')
+      end
+
+      def asset_pipeline?
+        false
+      end
+
+      def mysql?
+        options[:database] == 'mysql'
+      end
+
+      def postgresql?
+        options[:database] == 'postgresql'
+      end
+
+      def iptables?
+        haproxy? || mongodb? || sphinx? || redis? || memcached? || database?
+      end
+
+      def worker?
+        dj? || @roles.include?('worker')
+      end
+
+      def sysctl?
+        redis? || database? || sphinx?
+      end
+
+      def servers_with_rails_env
+        rails_roles = []
+        rails_roles << 'application' if app?
+        rails_roles << 'database' if database?
+        rails_roles << 'sphinx' if sphinx?
+        rails_roles << 'worker' if worker?
+
+        rails_roles.map {|role| "#{role}_servers" }
+      end
+
+      def normalize_roles(roles)
+        roles.map do |role|
+          case role
+          when 'db'
+            'database'
+          when 'app' 
+            'application'
+          when 'web' 
+            'haproxy'
+          else
+            role
+          end
+        end.compact.sort
+      end
+
+  protected
+
+      def add_options!(opt)
+        opt.separator ''
+        opt.separator 'Options:'
+        opt.on("--database DATABASE",
+                                  "(sql) database to use for the application") { |user| options[:database] = database }
+
+      end
 end
