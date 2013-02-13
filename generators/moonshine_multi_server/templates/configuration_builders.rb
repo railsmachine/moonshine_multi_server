@@ -145,10 +145,42 @@ module ConfigurationBuilders
       {:rules => rules}
     end  
 
-    # TODO add additional configuration, like master/slave
+    def redis_master_slave_pair
+      configuration[:redis_master_slave_pairs].detect {|primary, standby| primary == Facter.fqdn || standby == Facter.fqdn}
+    end 
+
+    def redis_primary?
+      primary, _ = redis_master_slave_pair()
+      primary == Facter.fqdn
+    end 
+
+    def redis_slave?
+      _, slave = redis_master_slave_pair()
+      slave == Facter.fqdn
+    end 
+
+    def master_redis_server
+      primary, _ = redis_master_slave_pair()
+      redis_servers.find {|server| server[:hostname] == primary }
+    end 
+
+    def slave_redis_server
+      _, slave = redis_master_slave_pair()
+      redis_servers.find {|server| server[:hostname] == slave }
+    end 
+
     def build_redis_configuration
-      {
-      }
+      slave_of = case Facter.ipaddress_eth1
+                 when master_redis_server[:internal_ip]
+                   nil
+                 when slave_redis_server[:internal_ip]
+                   "slaveof #{master_redis_server[:internal_ip]} 6379"
+                 else
+                   raise "don't know master for #{Facter.hostname} (ip was #{Facter.ipaddress_eth1}, but only know about #{master_redis_server.inspect} and #{slave_redis_server.inspect})"
+                 end
+
+      slaves = [slave_of].compact
+      {:slaves => slaves}
     end
 <%- end -%>
 <%- if memcached? -%>
