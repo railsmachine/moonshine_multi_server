@@ -186,13 +186,13 @@ module ConfigurationBuilders
 <%- if memcached? -%>
 
     def build_memcached_configuration
-      {:listen_address => Facter.ipaddress_eth1}
+      {:listen_address => '0.0.0.0'}
     end
 
     def build_memcached_iptables_configuration
       rules = build_base_iptables_rules
 
-      servers_with_rails_env.each do |server|
+      (servers_with_rails_env + memcached_servers).each do |server|
         rules << "-A INPUT -s #{server[:internal_ip]} -p tcp -m tcp --dport 11211 -j ACCEPT"
       end
 
