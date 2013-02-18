@@ -9,5 +9,12 @@ class RedisManifest < BaseManifest
 
   def scout_dependencies
     gem 'redis'
-  end
+
+    # make sure in redis group, to access /var/log/redis/redis-server
+    exec "usermod -a -G redis #{configuration[:user]}",
+      :unless => "groups #{configuration[:user]} | egrep '\\bredis\\b'",
+      :before => package('scout'),
+      :require => exec('install redis')
+  end  
+
 end
