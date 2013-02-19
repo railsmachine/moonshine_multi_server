@@ -132,6 +132,39 @@ module ConfigurationBuilders
       }
     end
 <%- end -%>
+<%- if mysql? %>
+    def build_mysql_configuration
+      server_id = if Facter.hostname =~ /^mysql(\d+)/  || Facter.hostname =~ /^db(\d+)/
+                    $1.to_i
+                  else
+                    1
+                  end
+      extra = """
+read-only
+"""
+      allowed_hosts = servers_with_rails_env.map {|server| server[:internal_ip] }
+
+      {
+        :mmm => {
+          :db1 => database_servers[0][:internal_ip],
+          :db2 => database_servers[1][:internal_ip],
+          :monitor => mmm_monitor_server[:internal_ip],
+          :bind_address_already_configured => true
+        },
+        :master_bind_address => '0.0.0.0',
+        :extra => extra,
+        :server_id => server_id,
+        :allowed_hosts => allowed_hosts
+      }
+    end
+
+    def build_mysql_allowed_hosts
+      servers_with_rails_env.map do |host|
+        host[:internal_ip]
+      end
+    end
+
+<%- end -%>
 <%- end -%>
 <%- if redis? -%>
 
@@ -255,6 +288,12 @@ module ConfigurationBuilders
      def servers_with_rails_env
        (<%= servers_with_rails_env.join(' + ') %>)
      end
- 
+  end
+
+  # override from moonshine_mysql_slave for mmm/multi_server support
+  def build_mysql_slave_info(slaves = nil)
+    database_servers.map do |database_server|
+      {:host => database_server[:ip], :mysql_address => database_server[:internal_ip]}
+    end
   end
 end

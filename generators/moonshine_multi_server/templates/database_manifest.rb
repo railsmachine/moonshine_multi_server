@@ -2,10 +2,19 @@ require "#{File.dirname(__FILE__)}/base_manifest.rb"
 
 class DatabaseManifest < BaseManifest
 
-<%- if postgresql? %>
+<%- if postgresql? -%>
   configure :postgresql => build_postgresql_configuration
+<%- elsif mysql? -%>
+  configure :mysql => build_mysql_configuration
 <%- end -%>
   recipe :standalone_database_stack
+<%- if mysql? -%>
+  recipe :mysql_tools
+<%- end -%>
+<%- if mmm? -%>
+  recipe :mysql_slave
+  recipe :mmm_agent
+<%- end -%>
 
   configure :iptables => { :rules => build_database_iptables_rules }
   recipe    :iptables

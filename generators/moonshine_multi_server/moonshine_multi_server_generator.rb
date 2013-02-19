@@ -4,6 +4,7 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
   KNOWN_DATABASES = %w(postgresql mysql)
 
   default_options :database => 'mysql'
+  default_options :mmm => false
 
   def initialize(runtime_args, runtime_options = {})
     super
@@ -77,6 +78,10 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
         options[:database] == 'mysql'
       end
 
+      def mmm?
+        options[:mmm]
+      end
+
       def postgresql?
         options[:database] == 'postgresql'
       end
@@ -126,5 +131,7 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
         opt.on("--database DATABASE",
                                   "(sql) database to use for the application") { |database| options[:database] = database }
 
+        opt.on("--mmm",
+                                  "setup mmm for high availability mysql") {  options[:mmm] = true }
       end
 end
