@@ -1,12 +1,13 @@
 class MoonshineMultiServerGenerator < Rails::Generator::Base
 
-  KNOWN_ROLES = %w(app haproxy database redis memcached mongodb dj sphinx)
+  KNOWN_ROLES = %w(application haproxy database redis memcached mongodb dj sphinx)
+  KNOWN_DATABASES = %w(postgresql mysql)
 
   default_options :database => 'mysql'
 
   def initialize(runtime_args, runtime_options = {})
     super
-    @roles = runtime_args.dup
+    @roles = normalize_roles(runtime_args.dup)
   end
 
   def manifest
@@ -123,7 +124,7 @@ class MoonshineMultiServerGenerator < Rails::Generator::Base
         opt.separator ''
         opt.separator 'Options:'
         opt.on("--database DATABASE",
-                                  "(sql) database to use for the application") { |user| options[:database] = database }
+                                  "(sql) database to use for the application") { |database| options[:database] = database }
 
       end
 end
