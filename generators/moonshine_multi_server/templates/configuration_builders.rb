@@ -285,6 +285,17 @@ read-only
     end
 <%- end -%>
 
+<%- if mmm? -%>
+    def mmm_monitor_server
+      haproxy_servers.first
+    end
+
+    def mmm_monitor_server?
+      Facter.fqdn == mmm_monitor_server[:hostname]
+    end 
+
+<%- end -%>
+
      def servers_with_rails_env
        (<%= servers_with_rails_env.join(' + ') %>)
      end

@@ -8,7 +8,11 @@ class HaproxyManifest < BaseManifest
   configure :iptables => build_web_iptables_configuration
 
   recipe :standalone_haproxy_stack
-    
+
+<%- if mmm?  -%>
+  recipe :mmm_monitor if mmm_monitor_server?
+
+<%- end -%>
   def scout_dependencies
     gem 'fastercsv'
   end   
