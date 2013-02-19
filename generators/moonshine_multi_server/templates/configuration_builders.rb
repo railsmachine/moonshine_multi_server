@@ -134,7 +134,7 @@ module ConfigurationBuilders
 <%- end -%>
 <%- if mysql? %>
     def build_mysql_configuration
-      server_id = if Facter.hostname =~ /^mysql(\d+)/  || Facter.hostname =~ /^db(\d+)/
+      server_id = if Facter.hostname =~ /^mysql(\d+)/  || Facter.hostname =~ /^db(\d+)/ 
                     $1.to_i
                   else
                     1
