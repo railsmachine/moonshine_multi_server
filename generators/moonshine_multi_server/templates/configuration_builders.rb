@@ -122,6 +122,13 @@ module ConfigurationBuilders
 <%- end -%>
       end
 
+  <%- if mmm? -%>
+      # mmm connection to mysql
+      rules << "-A INPUT -s #{mmm_monitor_server[:internal_ip]} -p tcp -m tcp --dport 3306 -j ACCEPT"
+      # mmm connection to the agent
+      rules << "-A INPUT -s #{mmm_monitor_server[:internal_ip]} -p tcp -m tcp --dport 9989 -j ACCEPT"
+
+  <%- end -%>
       rules
     end
 <%- if postgresql? -%>

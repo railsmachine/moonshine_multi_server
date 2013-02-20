@@ -10,7 +10,10 @@ class HaproxyManifest < BaseManifest
   recipe :standalone_haproxy_stack
 
 <%- if mmm?  -%>
-  recipe :mmm_monitor if mmm_monitor_server?
+  if mmm_monitor_server?
+    configure :mysql => build_mysql_configuration
+    recipe :mmm_monitor
+  end
 
 <%- end -%>
   def scout_dependencies
