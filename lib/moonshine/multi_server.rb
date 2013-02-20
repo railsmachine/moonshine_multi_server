@@ -16,6 +16,19 @@ module Moonshine
             end
           }
         end
+
+        server_helpers = configuration.keys.select do |key|
+          key.to_s =~ /_server$/
+        end
+
+        server_helpers.each do |helper|
+          eval %Q{
+            def self.#{helper}
+              @#{helper} ||= servers_array_to_servers_hash_with_info(configuration[:#{helper}] || []).first
+            end
+          }
+        end
+
       end
     end
 
