@@ -84,7 +84,8 @@ module ConfigurationBuilders
         },
         :deadtime => deadtime,
         :warntime => warntime,
-        :initdead => initdead
+        :initdead => initdead,
+        :interface => 'eth1'
       }
     end
 
