@@ -148,16 +148,19 @@ module ConfigurationBuilders
                     1
                   end
       extra = """
+bind-address = 0.0.0.0
 read-only
 """
       allowed_hosts = servers_with_rails_env.map {|server| server[:internal_ip] }
+      allowed_replication_hosts = database_servers.map {|server| server[:internal_ip] }
 
       {
         :mmm => {
           :db1 => database_servers[0][:internal_ip],
           :db2 => database_servers[1][:internal_ip],
           :monitor => mmm_monitor_server[:internal_ip],
-          :bind_address_already_configured => true
+          :bind_address_already_configured => true,
+          :allowed_replication_hosts => allowed_replication_hosts
         },
         :master_bind_address => '0.0.0.0',
         :extra => extra,

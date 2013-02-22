@@ -12,7 +12,6 @@ class DatabaseManifest < BaseManifest
   recipe :mysql_tools
 <%- end -%>
 <%- if mmm? -%>
-  recipe :mysql_slave
   recipe :mmm_agent
 <%- end -%>
 
