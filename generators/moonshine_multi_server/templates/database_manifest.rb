@@ -34,4 +34,12 @@ class DatabaseManifest < BaseManifest
     # TODO database specific scout dependencies
 <%- end -%>
   end
+<%- if mmm? -%>
+
+  # stub out rake environment. for various reasons, a db server isn't able to connect to itself
+  def rails_rake_environment
+    exec 'rake tasks', :command => 'true', :onlyif => 'false', :refreshonly => true
+  end
+<%- end -%>
+
 end
