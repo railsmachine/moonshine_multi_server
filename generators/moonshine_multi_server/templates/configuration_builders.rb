@@ -109,6 +109,26 @@ module ConfigurationBuilders
       {:rules => rules}
     end 
 <%- end -%>
+<%- if app? -%>
+
+    def build_app_iptables_configuration
+      rules = build_base_iptables_rules
+      # open access to http and https
+      [80, 443].each do |port|
+        rules << "-A INPUT -p tcp -m tcp --dport #{port} -j ACCEPT"
+      end 
+
+      {:rules => rules}
+    end 
+<%- end -%>
+<%- if worker? -%>
+
+    def build_worker_iptables_configuration
+      rules = build_base_iptables_rules
+
+      {:rules => rules}
+    end 
+<%- end -%>
 <%- if database? -%>
 
     def build_database_iptables_rules

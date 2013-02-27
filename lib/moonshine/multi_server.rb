@@ -86,6 +86,7 @@ module Moonshine
     def standalone_worker_stack
       recipe :rails_recipes
       recipe :default_system_config
+      recipe :iptables
     end
     
     def default_database_stack
@@ -151,6 +152,7 @@ EOF
     def standalone_application_stack
       recipe :default_application_stack
       recipe :default_system_config      
+      recipe :iptables
     end
 
     def default_system_config
