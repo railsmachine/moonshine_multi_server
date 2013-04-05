@@ -250,7 +250,16 @@ read-only
 <%- if memcached? -%>
 
     def build_memcached_configuration
-      {:listen_address => '0.0.0.0'}
+      max_memory = if Facter.memorytotal =~ /(\d+(?:\.\d+)) GB/
+                     # convert to mb, and only use 80% of memory
+                     ($1.to_f * 1024 * 0.80).to_i
+                   else 
+                     raise "Couldn't figure out how to convert #{Facter.memorytotal} to mb to configure memcached's max_memory"
+                   end  
+      {    
+        :listen_address => Facter.ipaddress_eth1,
+        :max_memory => max_memory
+      }    
     end
 
     def build_memcached_iptables_configuration
