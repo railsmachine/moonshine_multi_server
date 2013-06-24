@@ -132,6 +132,10 @@ module Moonshine
         options[:database] == 'mysql'
       end
 
+      def mmm?
+        options[:mmm]
+      end
+
       def postgresql?
         options[:database] == 'postgresql'
       end
