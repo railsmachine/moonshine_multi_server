@@ -61,3 +61,6 @@ TODO
 * Generator?!
  * <code>script/generate moonshine_multi_server app web db</code> util
 * build capistrano servers from `*_servers` datas
+
+***
+Unless otherwise specified, all content copyright &copy; 2014, [Rails Machine, LLC](http://railsmachine.com)
