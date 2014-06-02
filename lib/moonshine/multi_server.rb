@@ -176,6 +176,16 @@ EOF
       recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_logrotate
     end
 
+    def rails_migrations
+      if Facter.fqdn == application_servers.first[:hostname]
+        rake 'db:migrate'
+      else
+        exec "rake db:migrate",
+          :command => 'true',
+          :user => configuration[:user]
+      end
+    end
+
     def rails_database_recipes
       recipe :rails_bootstrap, :rails_migrations
     end
