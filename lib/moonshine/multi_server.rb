@@ -182,7 +182,7 @@ EOF
       else
         exec "rake db:migrate",
           :command => 'true',
-          :user => 'rails'
+          :user => configuration[:user]
       end
     end
 
