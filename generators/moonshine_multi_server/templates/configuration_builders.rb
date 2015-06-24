@@ -2,7 +2,7 @@ module ConfigurationBuilders
 
   def self.included(base)
     base.extend(ClassMethods)
-  end 
+  end
 
   module ClassMethods
     def build_base_iptables_rules
@@ -107,7 +107,7 @@ module ConfigurationBuilders
       end
 
       {:rules => rules}
-    end 
+    end
 <%- end -%>
 <%- if app? -%>
 
@@ -116,10 +116,10 @@ module ConfigurationBuilders
       # open access to http and https
       [80, 443].each do |port|
         rules << "-A INPUT -p tcp -m tcp --dport #{port} -j ACCEPT"
-      end 
+      end
 
       {:rules => rules}
-    end 
+    end
 <%- end -%>
 <%- if worker? -%>
 
@@ -127,7 +127,7 @@ module ConfigurationBuilders
       rules = build_base_iptables_rules
 
       {:rules => rules}
-    end 
+    end
 <%- end -%>
 <%- if database? -%>
 
@@ -155,14 +155,14 @@ module ConfigurationBuilders
 <%- if postgresql? -%>
     def build_postgresql_configuration
       {
-        :listen_addresses => ['127.0.0.1', Facter.ipaddress_eth1],
+        :listen_addresses => ['127.0.0.1', Facter.value(:ipaddress_eth1)],
         :version => "9.2"
       }
     end
 <%- end -%>
 <%- if mysql? %>
     def build_mysql_configuration
-      server_id = if Facter.hostname =~ /^mysql(\d+)/  || Facter.hostname =~ /^db(\d+)/ 
+      server_id = if Facter.value(:hostname) =~ /^mysql(\d+)/  || Facter.value(:hostname) =~ /^db(\d+)/
                     $1.to_i
                   else
                     1
@@ -207,40 +207,40 @@ read-only
       end
 
       {:rules => rules}
-    end  
+    end
 
     def redis_master_slave_pair
-      configuration[:redis_master_slave_pairs].detect {|primary, standby| primary == Facter.fqdn || standby == Facter.fqdn}
-    end 
+      configuration[:redis_master_slave_pairs].detect {|primary, standby| primary == Facter.value(:fqdn) || standby == Facter.value(:fqdn)}
+    end
 
     def redis_primary?
       primary, _ = redis_master_slave_pair()
-      primary == Facter.fqdn
-    end 
+      primary == Facter.value(:fqdn)
+    end
 
     def redis_slave?
       _, slave = redis_master_slave_pair()
-      slave == Facter.fqdn
-    end 
+      slave == Facter.value(:fqdn)
+    end
 
     def master_redis_server
       primary, _ = redis_master_slave_pair()
       redis_servers.find {|server| server[:hostname] == primary }
-    end 
+    end
 
     def slave_redis_server
       _, slave = redis_master_slave_pair()
       redis_servers.find {|server| server[:hostname] == slave }
-    end 
+    end
 
     def build_redis_configuration
-      slave_of = case Facter.ipaddress_eth1
+      slave_of = case Facter.value(:ipaddress_eth1)
                  when master_redis_server[:internal_ip]
                    nil
                  when slave_redis_server[:internal_ip]
                    "slaveof #{master_redis_server[:internal_ip]} 6379"
                  else
-                   raise "don't know master for #{Facter.hostname} (ip was #{Facter.ipaddress_eth1}, but only know about #{master_redis_server.inspect} and #{slave_redis_server.inspect})"
+                   raise "don't know master for #{Facter.value(:hostname)} (ip was #{Facter.value(:ipaddress_eth1)}, but only know about #{master_redis_server.inspect} and #{slave_redis_server.inspect})"
                  end
 
       slaves = [slave_of].compact
@@ -250,16 +250,16 @@ read-only
 <%- if memcached? -%>
 
     def build_memcached_configuration
-      max_memory = if Facter.memorytotal =~ /(\d+(?:\.\d+)) GB/
+      max_memory = if Facter.value(:memorytotal) =~ /(\d+(?:\.\d+)) GB/
                      # convert to mb, and only use 80% of memory
                      ($1.to_f * 1024 * 0.80).to_i
-                   else 
-                     raise "Couldn't figure out how to convert #{Facter.memorytotal} to mb to configure memcached's max_memory"
-                   end  
-      {    
-        :listen_address => Facter.ipaddress_eth1,
+                   else
+                     raise "Couldn't figure out how to convert #{Facter.value(:memorytotal)} to mb to configure memcached's max_memory"
+                   end
+      {
+        :listen_address => Facter.value(:ipaddress_eth1),
         :max_memory => max_memory
-      }    
+      }
     end
 
     def build_memcached_iptables_configuration
@@ -311,7 +311,7 @@ read-only
     def build_mongodb_configuration
       {
         :replset => mongodb_replset,
-        :bind_ip => Facter.ipaddress_eth1
+        :bind_ip => Facter.value(:ipaddress_eth1)
       }
     end
 
@@ -331,8 +331,8 @@ read-only
     end
 
     def mmm_monitor_server?
-      Facter.fqdn == mmm_monitor_server[:hostname]
-    end 
+      Facter.value(:fqdn) == mmm_monitor_server[:hostname]
+    end
 
 <%- end -%>
 

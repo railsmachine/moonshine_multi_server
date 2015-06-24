@@ -88,7 +88,7 @@ module Moonshine
       recipe :default_system_config
       recipe :iptables
     end
-    
+
     def default_database_stack
       case database_environment[:adapter]
       when 'mysql', 'mysql2'
@@ -99,7 +99,7 @@ module Moonshine
         recipe :sqlite3
       end
     end
-    
+
     def standalone_database_stack
       # Create the database from the current <tt>database_environment</tt>
       def mysql_database
@@ -151,7 +151,7 @@ EOF
 
     def standalone_application_stack
       recipe :default_application_stack
-      recipe :default_system_config      
+      recipe :default_system_config
       recipe :iptables
     end
 
@@ -177,7 +177,7 @@ EOF
     end
 
     def rails_migrations
-      if Facter.fqdn == application_servers.first[:hostname]
+      if Facter.value(:fqdn) == application_servers.first[:hostname]
         rake 'db:migrate'
       else
         exec "rake db:migrate",
@@ -202,7 +202,7 @@ EOF
         if gemfile_path.exist?
           exec 'bundle install',
             :command => 'true',
-            :onlyif => 'false', 
+            :onlyif => 'false',
             :refreshonly => true,
             :before => exec('rails_gems')
         end
@@ -236,7 +236,7 @@ EOF
     def servers_array_to_servers_hash_with_info(servers)
       servers.map do |hostname|
         ip = Resolv.getaddress hostname
-        {    
+        {
           :hostname => hostname,
           :ip => ip,
           :internal_ip => convert_public_ip_to_private_ip(ip)
