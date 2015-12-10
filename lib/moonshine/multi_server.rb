@@ -156,7 +156,7 @@ EOF
     end
 
     def default_system_config
-      recipe :ntp, :time_zone, :postfix, :cron_packages, :motd, :security_updates, :apt_sources
+      recipe :ntp, :time_zone, :postfix, :cron_packages, :motd, :security_updates, :apt_sources, :python_software_properties
     end
 
     def default_stack
